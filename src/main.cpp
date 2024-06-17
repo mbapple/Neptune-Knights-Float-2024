@@ -51,8 +51,10 @@ void loop() {
 }
 
 void mainLoopCode(void * pvParameters) {
+  setupWebSerial();
   for(;;) {
     if(floatDeployed() == true) {
+      //resetTime(); if you want to reset time every deployment
       deployFloat();
     }
   }

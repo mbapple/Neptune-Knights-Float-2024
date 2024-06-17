@@ -16,11 +16,13 @@ String header;
 
 void setupWebServer() {
   WiFi.softAP(ssid, password);
-  
-  WebSerial.begin(&serialServer);   
-  serialServer.begin();
 
   webServer.begin();
+}
+
+void setupWebSerial() {
+  WebSerial.begin(&serialServer);   
+  serialServer.begin();
 }
 
 void loopWebServer() {
@@ -47,12 +49,14 @@ void loopWebServer() {
             
             // do stuff if button pushed
             if (header.indexOf("GET /Deploy/NotDeployed") >= 0) {
-              startFloat(); // start the float, causes the main loop to then deploy the float
+              startFloat(); // start the float, causes the main loop to then deploy the float using core 0
             } else if (header.indexOf("GET /Stop") >= 0) {
-              stopFloat();
+              stopFloat(); // will cause the floatCode to break out of whichever loop it is in
             } else if (header.indexOf("GET /Display") >= 0) {
-              displayData();
-            } 
+              displayData(); // will display the data in the web serial
+            } else if (header.indexOf("GET /Packet") >= 0) {
+              displayPacket(); // will display the data in the web serial
+            }
             
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
@@ -85,6 +89,11 @@ void loopWebServer() {
             client.println("<p><a href=\"/Display\"><button class=\"button\">DISPLAY DATA</button></a></p>");
             client.println("</body></html>");
             
+            // Button to single packet of data
+            client.println("<p>Display Packet</p>");
+            client.println("<p><a href=\"/Packet\"><button class=\"button\">DISPLAY CURRENT PACKET</button></a></p>");
+            client.println("</body></html>");
+
             // The HTTP response ends with another blank line
             client.println();
             // Break out of the while loop

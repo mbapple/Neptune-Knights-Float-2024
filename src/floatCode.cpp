@@ -7,10 +7,15 @@ handles the control of the float's servo and the data gathered by the float
 #include "floatCode.h"
 #include "WebServer.h"
 
+//TODO: change the team number to the team number of the group, add it to the display function
+//PN01 1:51:40 UTC 9.8 kpa 1.00 meters
+String TeamNumber = "PN07";
 #define servoPin 16
 #define depthSensorPin 17 // 
-#define depthMultiplier 5.0 // what to multiply the analog read value by
-#define dataDelay 1000 // milliseconds between data collections
+//TODO: calculate multiplier to convert to Pa
+#define pressureMultiplier 2704 // what to multiply the analog read value by to convert to pressure
+//#define depthMultiplier 1/9806.5 // what to multiply the pascals value by to convert to meters
+#define dataDelay 5000 // milliseconds between data collections
 #define servoSpeed 10 // added/subtracted to 50 to get the duty cycle of the servo
 #define movementTime 100 // seconds to move servo completely
 // TODO: tune these values
@@ -54,6 +59,7 @@ void deployFloat() {
   delay(dataDelay);
 }
 
+// returns the float in a recursive loop
 void returnFloat(int returnStartTime) { // breaks when floatDeployed == false
   if(timeInSeconds() - returnStartTime < movementTime) { // subtract the time that the return started
     servo->setPWM(servoPin, 50, 50 - servoSpeed); // sets the servo to come up
@@ -67,10 +73,12 @@ void returnFloat(int returnStartTime) { // breaks when floatDeployed == false
   }
 }
 
+// sets the float_Deployed variable to true
 void startFloat() {
     float_Deployed = true;
 }
 
+// sets the float_Deployed variable to false, causing the recursvie loop to be broken
 void stopFloat() {
     float_Deployed = false;
 }
@@ -84,9 +92,9 @@ void logData() {
   }
 }
 
-// outputs the actual depth value from the depth sensor
+// outputs the actual pressure value from the sensor
 float convertSensorValue() {
-  return float(analogRead(depthSensorPin)) * depthMultiplier;
+  return float(analogRead(depthSensorPin)) * pressureMultiplier;
 }
 
 // prints the data to the web serial in a format to be copied and pasted into .csv
@@ -94,13 +102,30 @@ void displayData() {
   WebSerial.println();
   WebSerial.println("Data:");
   for(int i = 0; i << ROW; i++) {
-    WebSerial.print(data[i][0]);
-    WebSerial.print("");
-    WebSerial.print(data[i][1]);
+    WebSerial.print(TeamNumber + ",");
+    WebSerial.print(data[i][0] + ",");
+    WebSerial.print(data[i][1] + ",");
+    WebSerial.print(pressureToDepth(data[i][1].toFloat()));
     WebSerial.println(",");
   }
 }
 
+// displays single packet of current information
+void displayPacket() {
+  WebSerial.print(TeamNumber + ",");
+  WebSerial.print(getRTCTime() + ",");
+  WebSerial.print(convertSensorValue());
+  WebSerial.print(",");
+  WebSerial.print(pressureToDepth(convertSensorValue()));
+  WebSerial.print(",");
+  WebSerial.println();
+}
+
+// returns whether the float is deployed
 bool floatDeployed() {
     return float_Deployed;
+}
+
+float pressureToDepth(float pressure) {
+  return (pressure - 101325) / 9806.5;
 }

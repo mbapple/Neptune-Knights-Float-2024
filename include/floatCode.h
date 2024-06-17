@@ -7,3 +7,5 @@ void logData();
 float convertSensorValue();
 void displayData();
 bool floatDeployed();
+void displayPacket();
+float pressureToDepth(float pressure);

@@ -4,4 +4,5 @@
 
 
 void setupWebServer();
+void setupWebSerial();
 void loopWebServer();
