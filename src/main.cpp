@@ -24,8 +24,8 @@ void setup() {
   setupRTCTime();
   setupFloat();
   
-  /*
-  // setup up the tasks pinned to certain cores
+  
+  // main loop controls the float on core 0
   xTaskCreatePinnedToCore (
     mainLoopCode,
     "mainLoop",
@@ -33,9 +33,9 @@ void setup() {
     NULL,
     1,
     &mainLoop,
-    0); */
+    0); 
 
-  // webserver runs on core 2
+  // webserver runs on core 1
   xTaskCreatePinnedToCore (
     webServerLoopCode,
     "webServer",
@@ -50,13 +50,13 @@ void loop() {
 
 }
 
- /* 
 void mainLoopCode(void * pvParameters) {
   for(;;) {
-    WebSerial.println(getRTCTime());
-    delay(1000);
+    if(floatDeployed() == true) {
+      deployFloat();
+    }
   }
-} */
+} 
 
 void webServerLoopCode(void * pvParameters) {
   for(;;) {

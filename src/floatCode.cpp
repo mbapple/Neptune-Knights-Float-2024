@@ -46,7 +46,7 @@ void deployFloat() {
   if(true) { // TODO: add a condition to stop the loop
     returnFloat(timeInSeconds());
   }
-  if(floatDeployed() == true) { // recall deployFloat if floatDeployed true
+  if(floatDeployed() == true) { // recall deployFloat if floatDeployed still true
     logData();
     deployFloat();
   }
@@ -65,6 +65,10 @@ void returnFloat(int returnStartTime) { // breaks when floatDeployed == false
   if(floatDeployed() == true) { // continue logging data until float no longer deployed
     returnFloat(returnStartTime);
   }
+}
+
+void startFloat() {
+    float_Deployed = true;
 }
 
 void stopFloat() {

@@ -47,8 +47,7 @@ void loopWebServer() {
             
             // do stuff if button pushed
             if (header.indexOf("GET /Deploy/NotDeployed") >= 0) {
-              resetTime();
-              deployFloat();
+              startFloat(); // start the float, causes the main loop to then deploy the float
             } else if (header.indexOf("GET /Stop") >= 0) {
               stopFloat();
             } else if (header.indexOf("GET /Display") >= 0) {
