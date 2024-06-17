@@ -1,7 +1,6 @@
 /*
 Matthew Barrs
 Neptune Knights Float 2024
-
 */
 
 #include <Arduino.h>
@@ -13,7 +12,6 @@ Neptune Knights Float 2024
 #define depthMultiplier 100 // what to multiply the analog read value by
 #define dataDelay 1000 // milliseconds between data collections
 #define servoSpeed 10 // 10-90
-
 
 const int ROW = 100;
 const int COL = 2;
