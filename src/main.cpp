@@ -23,7 +23,8 @@ void setup() {
   setupWebServer();
   setupRTCTime();
   setupFloat();
-
+  
+  /*
   // setup up the tasks pinned to certain cores
   xTaskCreatePinnedToCore (
     mainLoopCode,
@@ -32,8 +33,9 @@ void setup() {
     NULL,
     1,
     &mainLoop,
-    0);
+    0); */
 
+  // webserver runs on core 2
   xTaskCreatePinnedToCore (
     webServerLoopCode,
     "webServer",
@@ -47,26 +49,14 @@ void setup() {
 void loop() {
 
 }
-  
+
+ /* 
 void mainLoopCode(void * pvParameters) {
-  /*
-  // Sweep the servo from 0 to 180 degrees
-  for (int angle = 0; angle <= 100; angle++) {
-    servo->setPWM(servoPin, 50, angle);
-    delay(servoSpeed);
-  }
-  
-  // Sweep the servo from 180 to 0 degrees
-  for (int angle = 100; angle >= 0; angle--) {
-    servo->setPWM(servoPin, 50, angle);
-    delay(servoSpeed);
-  }
-  */
   for(;;) {
     WebSerial.println(getRTCTime());
     delay(1000);
   }
-}
+} */
 
 void webServerLoopCode(void * pvParameters) {
   for(;;) {

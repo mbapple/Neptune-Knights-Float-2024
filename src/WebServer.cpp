@@ -1,7 +1,8 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
-#include <floatCode.h>
+#include "RTCtime.h"
+#include "floatCode.h"
 
 
 const char *ssid = "Neptune Knights Float";
@@ -46,6 +47,7 @@ void loopWebServer() {
             
             // do stuff if button pushed
             if (header.indexOf("GET /Deploy/NotDeployed") >= 0) {
+              resetTime();
               deployFloat();
             } else if (header.indexOf("GET /Stop") >= 0) {
               stopFloat();
