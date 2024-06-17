@@ -53,7 +53,7 @@ String getRTCTime() {
 //
 //  Serial.println(rtc.getMicros());        //  (long)    723546
 //  Serial.println(rtc.getMillis());        //  (long)    723
-//  Serial.println(rtc.getEpoch());         //  (long)    1609459200
+//return rtc.getEpoch();         //  (long)    1609459200
 //  Serial.println(rtc.getSecond());        //  (int)     38    (0-59)
 //  Serial.println(rtc.getMinute());        //  (int)     24    (0-59)
 //  Serial.println(rtc.getHour());          //  (int)     3     (1-12)
@@ -66,7 +66,7 @@ String getRTCTime() {
 //  Serial.println(rtc.getMonth());         //  (int)     0     (0-11)
 //  Serial.println(rtc.getYear());          //  (int)     2021
 
-//  Serial.println(rtc.getLocalEpoch());         //  (long)    1609459200 epoch without offset
+  //return rtc.getLocalEpoch();         //  (long)    1609459200 epoch without offset
   //Serial.println(rtc.getTime("%A, %B %d %Y %H:%M:%S"));   // (String) returns time with specified format 
   // formating options  http://www.cplusplus.com/reference/ctime/strftime/
 
@@ -77,3 +77,15 @@ String getRTCTime() {
   //delay(1000);
 }
 
+void resetTime() {
+  rtc.setTime(0);
+}
+
+int timeInSeconds() {
+  String time = rtc.getTime();
+  int hours = time.substring(0, 2).toInt();
+  int minutes = time.substring(3, 5).toInt();
+  int seconds = time.substring(6, 8).toInt();
+  int totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  return totalSeconds;
+}
