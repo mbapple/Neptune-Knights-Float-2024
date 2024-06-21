@@ -1,37 +1,152 @@
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
+#include <AsyncTCP.h>
 #include "RTCtime.h"
 #include "floatCode.h"
+#include "WebServer.h"
 
 
 const char *ssid = "Neptune Knights Float";
 const char *password = "123456789";
 
+//unsigned long last_print_time = millis();
+
 AsyncWebServer serialServer(80);
-WiFiServer webServer(81);
+//WiFiServer serialServer(80);
+//WiFiServer webServer(81);
+
+TaskHandle_t deployCode;
 
 // Variable to store the HTTP request
-String header;
+//String header;
 
+/*
 void setupWebServer() {
   WiFi.softAP(ssid, password);
-
+  Serial.begin(115200);
   webServer.begin();
-}
+}*/
+
 
 void setupWebSerial() {
+  /*
+  WiFi.softAP(ssid, password);
   WebSerial.begin(&serialServer);   
+  //WebSerial.msgCallback(recvMsg);
+  serialServer.begin(); */
+
+  
+  WiFi.softAP(ssid, password);
+  // Once connected, print IP
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.softAPIP());
+
+  serialServer.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Hi! This is WebSerial demo. You can access webserial interface at http://" + WiFi.softAPIP().toString() + "/webserial");
+  });
+
+  // WebSerial is accessible at "<IP Address>/webserial" in browser
+  WebSerial.begin(&serialServer);
+
+  /* Attach Message Callback */
+  WebSerial.onMessage([&](uint8_t *data, size_t len) {/*
+    Serial.printf("Received %u bytes from WebSerial: ", len);
+    Serial.write(data, len);
+    Serial.println();
+    WebSerial.println("Received Data...");*/
+    String d = "";
+    for(size_t i=0; i < len; i++){
+      d += char(data[i]);
+    if(d[0] == 'd') {
+      displayData();
+    }
+    if(d[0] == 's') {
+          xTaskCreatePinnedToCore (
+        deployCodeFunction,
+        "deployCode",
+        10000,
+        NULL,
+        1,
+        &deployCode,
+        1);
+    }
+    if(d[0] == 'p') {
+      displayPacket();
+    }
+    }
+    WebSerial.println(d);
+  });
+
+
+  // Start server
   serialServer.begin();
+  /*
+  Serial.begin(115200);
+  WiFi.softAP(ssid, password);
+  // Once connected, print IP
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.softAPIP()); */
 }
 
+void deployCodeFunction(void * pvParameters) {
+  deployFloat();
+}
+
+/*
+void webSerialLoop() {
+  // Print every 2 seconds (non-blocking)
+  if ((unsigned long)(millis() - last_print_time) > 2000) {
+    WebSerial.print(F("IP address: "));
+    WebSerial.println(WiFi.softAPIP());
+    WebSerial.printf("Uptime: %lums\n", millis());
+    WebSerial.printf("Free heap: %u\n", ESP.getFreeHeap());
+    last_print_time = millis();
+  }
+
+  WebSerial.loop();
+}*/
+
+
+/*
+void websiteServerLoop() {
+  // Print every 2 seconds (non-blocking)
+  if ((unsigned long)(millis() - last_print_time) > 2000) {
+    WebSerial.print(F("IP address: "));
+    WebSerial.println(WiFi.softAPIP());
+    WebSerial.printf("Uptime: %lums\n", millis());
+    WebSerial.printf("Free heap: %u\n", ESP.getFreeHeap());
+    last_print_time = millis();
+  }
+
+  WebSerial.loop();
+} */
+
+/*
+void recvMsg(uint8_t *data, size_t len){
+  WebSerial.println("Received Data...");
+  String d = "";
+  for(int i=0; i < len; i++) {
+    d += char(data[i]);
+  }
+  WebSerial.println(d);
+  if (d == "deploy") {
+    deployFloat(); // depoloy float if "deploy" received
+  }
+  if (d=="display") {
+    displayData(); // display data if "display" received
+  }
+}*/
+
+/*
 void loopWebServer() {
   WiFiClient client = webServer.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
-    Serial.println("New Client.");          // print a message out in the serial port
+    WebSerial.println("New Client.");          // print a message out in the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
     while (client.connected()) {            // loop while the client's connected
+      Serial.println("Client Connected");
       if (client.available()) {             // if there's bytes to read from the client,
         char c = client.read();             // read a byte, then
         //Serial.write(c);                    // print it out the serial monitor
@@ -49,8 +164,10 @@ void loopWebServer() {
             
             // do stuff if button pushed
             if (header.indexOf("GET /Deploy/NotDeployed") >= 0) {
+              WebSerial.println("Float deployd'");
               startFloat(); // start the float, causes the main loop to then deploy the float using core 0
             } else if (header.indexOf("GET /Stop") >= 0) {
+              WebSerial.println("Float Stopped");
               stopFloat(); // will cause the floatCode to break out of whichever loop it is in
             } else if (header.indexOf("GET /Display") >= 0) {
               displayData(); // will display the data in the web serial
@@ -110,7 +227,7 @@ void loopWebServer() {
     header = "";
     // Close the connection
     client.stop();
-    Serial.println("Client disconnected.");
-    Serial.println("");
+    WebSerial.println("Client disconnected.");
+    WebSerial.println("");
   }
-}
+}*/

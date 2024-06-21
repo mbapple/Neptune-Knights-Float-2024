@@ -6,3 +6,6 @@
 void setupWebServer();
 void setupWebSerial();
 void loopWebServer();
+void webServerLoop();
+void webSerialLoop();
+void deployCodeFunction(void * pvParameters);

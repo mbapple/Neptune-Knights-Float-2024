@@ -83,9 +83,17 @@ void resetTime() {
 
 int timeInSeconds() {
   String time = rtc.getTime();
-  int hours = time.substring(0, 2).toInt();
   int minutes = time.substring(3, 5).toInt();
   int seconds = time.substring(6, 8).toInt();
-  int totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  int totalSeconds = minutes * 60 + seconds;
   return totalSeconds;
+}
+
+String converSecondsToTime(int seconds) {
+  String value = "";
+  value += seconds/60;
+  seconds = seconds % 60;
+  value += ":";
+  value += seconds;
+  return value;
 }

@@ -1,10 +1,9 @@
 void setupFloat();
 void deployFloat();
-void returnFloat(int returnStartTime);
 void startFloat();
 void stopFloat();
 void logData();
-float convertSensorValue();
+float convertSensorValue(int seconds);
 void displayData();
 bool floatDeployed();
 void displayPacket();
